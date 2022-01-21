@@ -6,10 +6,14 @@ import java.util.List;
 public class Player {
     private List<Card> cards;
     private int account;
+    private Massage massage;
+
+
 
     public Player(int account) {
         this.cards = new ArrayList<>();
         this.account = account;
+        this.massage = new Massage();
     }
 
     public void cardPop(CardDeck cardDeck){
@@ -75,5 +79,14 @@ public class Player {
 
     public void setAccount(int account) {
         this.account = account;
+    }
+
+
+    public Massage getMassage() {
+        return massage;
+    }
+
+    public void setMassage(Massage massage) {
+        this.massage = massage;
     }
 }

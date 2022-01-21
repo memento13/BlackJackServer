@@ -1,4 +1,5 @@
 import entity.CardDeck;
+import entity.Massage;
 import entity.Player;
 import entity.Dealer;
 
@@ -41,10 +42,13 @@ public class Main {
                     dealer.cardPop(cardDeck);
                     if(dealer.checkBlackJack()) {
                         //딜러 블랙잭
-                        StringBuffer msg = new StringBuffer();
-                        msg.append("code:501;msg:딜러 블랙잭!;dealer_cards:").append(dealer.printCards());
-                        outputStream.writeUTF(msg.toString());
+                        player.getMassage().inputCode("501");
+                        player.getMassage().inputMsg("딜러 블랙잭!");
+                        player.getMassage().inputDealerCards(dealer.printCards());
+
+                        outputStream.writeUTF(player.getMassage().toString());
                         outputStream.flush();
+                        player.getMassage().clearMassage();
                         break;
                     }else {
                         player.cardPop(cardDeck);
@@ -52,10 +56,15 @@ public class Main {
                         //플레이어 블랙잭 여부 확인
                         if(player.checkBlackJack()){
                             player.addAccount(playerBat*2);
-                            StringBuffer msg = new StringBuffer();
-                            msg.append("code:500;msg:클라이언트 블랙잭!;client_cards:").append(player.printCards()).append(";account:").append(player.getAccount());
-                            outputStream.writeUTF(msg.toString());
+
+                            player.getMassage().inputCode("500");
+                            player.getMassage().inputMsg("클라이언트 블랙잭!");
+                            player.getMassage().inputClientCards(player.printCards());
+                            player.getMassage().inputAccount(player.getAccount());
+
+                            outputStream.writeUTF(player.getMassage().toString());
                             outputStream.flush();
+                            player.getMassage().clearMassage();
                             break;
 
                         }else{
@@ -66,12 +75,16 @@ public class Main {
                             boolean hitLoopFlag = true;
                             StringBuffer msg = null;
                             while (hitLoopFlag){
-                                msg = new StringBuffer();
-                                msg.append("code:800;msg:히트? 스탠드? (히트시 hit 입력 스탠드시 stand 입력);")
-                                        .append("client_cards:").append(player.printCards()).append(";account:").append(player.getAccount())
-                                        .append(";dealer_first_card:").append(dealer.printFirstCard());
-                                outputStream.writeUTF(msg.toString());
+
+                                player.getMassage().inputCode("800");
+                                player.getMassage().inputMsg("히트? 스탠드? (히트시 hit 입력 스탠드시 stand 입력)");
+                                player.getMassage().inputClientCards(player.printCards());
+                                player.getMassage().inputAccount(player.getAccount());
+                                player.getMassage().inputDealerFirstCard(dealer.printFirstCard());
+
+                                outputStream.writeUTF(player.getMassage().toString());
                                 outputStream.flush();
+                                player.getMassage().clearMassage();
 
                                 String answer = inputStream.readUTF();
                                 if(answer.equals("hit")){
@@ -91,36 +104,54 @@ public class Main {
                             }
                             if(bustFlag){ //플레이어 버스트인경우
 
-                                msg = new StringBuffer();
-                                msg.append("code:520;msg:플레이어 패배;account:").append(player.getAccount()).append(";client_cards:").append(player.printCards()).append(";dealer_cards:").append(dealer.printCards());
+                                player.getMassage().inputCode("520");
+                                player.getMassage().inputMsg("플레이어 패배");
+                                player.getMassage().inputAccount(player.getAccount());
+                                player.getMassage().inputClientCards(player.printCards());
+                                player.getMassage().inputDealerCards(dealer.printCards());
 
-                                outputStream.writeUTF(msg.toString());
-
+                                outputStream.writeUTF(player.getMassage().toString());
                                 outputStream.flush();
-
+                                player.getMassage().clearMassage();
 
                             }else if(standFlag){ //플레이어가 스탠드를 한경우
                                 dealer.cardsPop(cardDeck);
                                 msg = new StringBuffer();
                                 if(dealer.checkBust()){//딜러 버스트 (플레이어 승리)
                                     player.addAccount(playerBat*2);
-                                    msg.append("code:510;msg:플레이어 승리;account:").append(player.getAccount())
-                                            .append(";client_cards:").append(player.printCards()).append(";dealer_cards:").append(dealer.printCards());
+
+                                    player.getMassage().inputCode("510");
+                                    player.getMassage().inputMsg("플레이어 승리");
+                                    player.getMassage().inputAccount(player.getAccount());
+                                    player.getMassage().inputClientCards(player.printCards());
+                                    player.getMassage().inputDealerCards(dealer.printCards());
+
                                 }
                                 else{
                                     if(dealer.getCardsValue()> player.getCardsValue()){ //딜러 승리
-                                        msg.append("code:520;msg:플레이어 패배;account:").append(player.getAccount())
-                                                .append(";client_cards:").append(player.printCards()).append(";dealer_cards:").append(dealer.printCards());
+
+                                        player.getMassage().inputCode("520");
+                                        player.getMassage().inputMsg("플레이어 패배");
+                                        player.getMassage().inputAccount(player.getAccount());
+                                        player.getMassage().inputClientCards(player.printCards());
+                                        player.getMassage().inputDealerCards(dealer.printCards());
+
                                     }
                                     else { //플레이어 승리
                                         player.addAccount(playerBat*2);
-                                        msg.append("code:510;msg:플레이어 승리;account:").append(player.getAccount())
-                                                .append(";client_cards:").append(player.printCards()).append(";dealer_cards:").append(dealer.printCards());
+
+                                        player.getMassage().inputCode("510");
+                                        player.getMassage().inputMsg("플레이어 승리");
+                                        player.getMassage().inputAccount(player.getAccount());
+                                        player.getMassage().inputClientCards(player.printCards());
+                                        player.getMassage().inputDealerCards(dealer.printCards());
+
                                     }
                                 }
                                 //메시지 아웃풋 스트림
-                                outputStream.writeUTF(msg.toString());
+                                outputStream.writeUTF(player.getMassage().toString());
                                 outputStream.flush();
+                                player.getMassage().clearMassage();
                             }
                         }
                     }
@@ -158,7 +189,7 @@ public class Main {
         boolean batPass = false;
         int batMoney = 0;
         // 계좌지급
-        assignAccount(socket, inputStream, outputStream, player.getAccount());
+        assignAccount(socket, inputStream, outputStream, player);
         try{
             while(!batPass){
 
@@ -168,22 +199,33 @@ public class Main {
                 batMoney = Integer.parseInt(inputStream.readUTF());
 
                 if(batMoney> player.getAccount()){ //배팅금액이 계좌금액보다 더 큰 경우
-                    msg.append("code:301;msg:배팅금액이 계좌금액보다 큽니다.;account:"+ player.getAccount());
-                    outputStream.writeUTF(msg.toString());
+                    player.getMassage().inputCode("301");
+                    player.getMassage().inputMsg("배팅금액이 계좌금액보다 큽니다.");
+                    player.getMassage().inputAccount(player.getAccount());
+
+                    outputStream.writeUTF(player.getMassage().toString());
                     outputStream.flush();
+                    player.getMassage().clearMassage();
+
                 }else if(batMoney>500){ //배팅금액이 500보다 큰 경우
-                    msg.append("code:302;msg:배팅금액이 500보다 큽니다.;account:"+ player.getAccount());
-                    outputStream.writeUTF(msg.toString());
+                    player.getMassage().inputCode("302");
+                    player.getMassage().inputMsg("배팅금액이 500보다 큽니다");
+                    player.getMassage().inputAccount(player.getAccount());
+
+                    outputStream.writeUTF(player.getMassage().toString());
                     outputStream.flush();
+                    player.getMassage().clearMassage();
                 }else{ // 배팅금액이 올바른 경우
-                    msg.append("code:303;msg:"+batMoney+"이 배팅되었습니다.");
+
+                    player.getMassage().inputCode("303");
+                    player.getMassage().inputMsg("code:303;msg:"+batMoney+"이 배팅되었습니다.");
+
                     player.debitAccount(batMoney);
-                    outputStream.writeUTF(msg.toString());
+                    outputStream.writeUTF(player.getMassage().toString());
                     outputStream.flush();
+                    player.getMassage().clearMassage();
                     batPass =true;
                 }
-
-
             }
 
         }catch (Exception e){
@@ -195,12 +237,15 @@ public class Main {
         return batMoney;
     }
 
-    public static void assignAccount(Socket socket, ObjectInputStream inputStream, ObjectOutputStream outputStream,int money) throws IOException {
+    public static void assignAccount(Socket socket, ObjectInputStream inputStream, ObjectOutputStream outputStream, Player player) throws IOException {
         try{
-            StringBuffer msg = new StringBuffer();
-            msg.append("code:300;msg:배팅하시오! (500보다 큰 금액은 안됩니다);account:"+money);
-            outputStream.writeUTF(msg.toString());
+            player.getMassage().inputCode("300");
+            player.getMassage().inputMsg("배팅하시오! (500보다 큰 금액은 안됩니다)");
+            player.getMassage().inputAccount(player.getAccount());
+
+            outputStream.writeUTF(player.getMassage().toString());
             outputStream.flush();
+            player.getMassage().clearMassage();
 
         }catch (Exception e){
             inputStream.close();
