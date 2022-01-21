@@ -14,6 +14,11 @@ public class Massage {
         this.massage = new StringBuffer();
     }
 
+    @Override
+    public String toString() {
+        return massage.toString();
+    }
+
     public StringBuffer getMassage() {
         return massage;
     }
@@ -74,11 +79,6 @@ public class Massage {
         inputMassage("dealer_first_card",dealer_first_card);
         return true;
     }
-
-
-
-
-
 
 
 }
