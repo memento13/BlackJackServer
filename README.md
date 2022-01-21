@@ -45,6 +45,7 @@ java -jar BlackJackClient.jar 서버의주소 비밀번호 를 입력하여 엔�
 520|플레이어 패배| code; msg; account; client_cards;dealer_cards;
 800|히트, 스탠드 질의| code; msg; client_cards;dealer_cards;
 <br>
+
 ### BlackJackServer 프로젝트 클래스 설명
 ● Card 
  - 카드를 객체화 한것이며 카드의 문양과 값(숫자,A,J,Q,K)을 객체로 가지고 있다.
